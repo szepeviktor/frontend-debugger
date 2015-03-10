@@ -1,0 +1,37 @@
+html { background-color:#fff; color:#000; }
+body { min-width: 580px; }
+h1, #control-panel .part { color: #333333; padding-left: 10px; }
+#control-panel .part { font-size: 2em; font-weight: bold; cursor: pointer;
+    text-decoration: none; }
+#control-panel .part:hover { color: black; }
+pre { padding: 2px; border: 1px solid #888888; color: #BDB76B;
+    white-space: pre-wrap; tab-size: 4; -moz-tab-size: 4; }
+pre.no-wrap { white-space: pre; }
+pre span::selection { color: #333333; background: #F0E68C; }
+pre span::-moz-selection { color: #333333; background: #F0E68C; }
+ol.linenums { padding-left: 48px; line-height: 1.2em; }
+.transition ol.linenums { transition: padding 1s; }
+ol.hide-linenums { padding-left: 2px; }
+li.L0, li.L1, li.L2, li.L3, li.L4, li.L5, li.L6, li.L7, li.L8, li.L9 {
+    background: inherit !important; list-style-type: decimal !important; }
+ol.hide-linenums li.L0,
+ol.hide-linenums li.L1,
+ol.hide-linenums li.L2,
+ol.hide-linenums li.L3,
+ol.hide-linenums li.L4,
+ol.hide-linenums li.L5,
+ol.hide-linenums li.L6,
+ol.hide-linenums li.L7,
+ol.hide-linenums li.L8,
+ol.hide-linenums li.L9 { list-style-type: none !important; }
+/* \021B5 = &crarr; */
+li:after { content: '\021B5'; }
+.transition li:after { transition: opacity 0.5s; }
+li.no-end:after { opacity: 0; }
+#includes li:after { content: none; }
+#control-panel { position: fixed; top: 5px; left: 300px; padding: 6px 1px;
+    min-width: 235px; background: rgba(128,128,128,0.50); border: 2px solid gray;
+    box-shadow: 0 0 2px gray; border-radius: 5px; }
+/* http://flatuicolors.com/ */
+#control-panel button { background: #27ae60; margin: 0 5px; opacity: 0.70; }
+#control-panel button.on { background: #e74c3c; }
