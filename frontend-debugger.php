@@ -1,13 +1,13 @@
 <?php
-/*
-Plugin Name: Frontend Debugger
-Plugin URI: https://wordpress.org/plugins/frontend-debugger/
-Description: Display page source prettified.
-Version: 0.3
-Author: Viktor Szépe
-Author URI: http://www.online1.hu/webdesign/
-License: GNU General Public License (GPL) version 2
-*/
+/**
+ * Plugin Name: Frontend Debugger
+ * Plugin URI: http://wordpress.org/plugins/frontend-debugger/
+ * Description: Display output of all active plugins
+ * Version: 0.1
+ * Author: Viktor Szépe
+ * Author URI: http://www.online1.hu/webdesign/
+ * License: GNU General Public License (GPL) version 2
+ */
 
 if ( ! function_exists( 'add_filter' ) ) {
     header( 'Status: 403 Forbidden' );
@@ -19,8 +19,9 @@ class Frontend_Debugger {
 
     private static $singletone;
     private $debugger_template_path;
-    private $debugger_template_uri;
-    private $current_template;
+    private $header_separator = '<!-- frontend_debugger_HEADER -->';
+    private $was_loop_start = false;
+    private $footer_separator = '<!-- frontend_debugger_FOOTER -->';
     /**
      * Parts of HTML output.
      */
@@ -35,15 +36,15 @@ class Frontend_Debugger {
         if ( is_admin() )
             return;
 
-        $this->debugger_template_path = plugin_dir_path( __FILE__ ) . 'template/';
-        $this->debugger_template_uri = plugin_dir_url( __FILE__ ) . 'template/';
+        $this->debugger_template_path = plugin_dir_path( __FILE__ ) . 'template/frontend.php';
 
         add_filter( 'template_include', array( $this, 'load_template' ) );
+        add_action( 'wp_loaded', array( $this, 'ob_pre' ) );
+        add_action( 'shutdown', array( $this, 'ob_post' ), 0 );
         add_action( 'get_header', array( $this, 'set_header' ) );
+        // no way to detect END OF HEADER
+        add_action( 'loop_start', array( $this, 'set_loop_start' ) );
         add_filter( 'the_content', array( $this, 'print_content_id' ), 0 );
-        // @TODO - get_sidebar
-        // get_template_part_$ https://github.com/szepeviktor/wordpress-plugin-construction/blob/master/what-the-file/what-the-file.php
-        // get_search_form
         add_action( 'get_footer', array( $this, 'set_footer' ) );
     }
 
@@ -57,47 +58,11 @@ class Frontend_Debugger {
 
     public function load_template( $name ) {
 
-        if ( ! is_super_admin() && ! isset( $_GET['view-source'] ) )
-            return $name;
+        $this->includes[] = $name;
+        echo $name; exit;
+        $header = preg_split( '/\bget_header\s*\(.*\)\s*;/', $html, 1 );
 
-        $this->includes['post_' . count( $this->includes )] = $name;
-        $this->current_template = $name;
-
-        return $this->get_template_path( 'frontend.php' );
-    }
-
-    public function run_template() {
-
-        // no other way to detect END OF HEADER
-        // @TODO WP FileSystem API
-        $php = file_get_contents( $this->current_template );
-        $header_php = preg_split( '/\b(get_header\s*\(.*\)\s*;)/', $php, 2, PREG_SPLIT_DELIM_CAPTURE );
-
-        // remove opening PHP tag
-        $header_php[0] = substr( $header_php[0], 5 );
-        // generate header
-        ob_start();
-        eval( $header_php[0] . $header_php[1] );
-        $this->part['header'] = $this->process_html( ob_get_contents() );
-        ob_end_clean();
-
-        $footer_php = preg_split( '/\b(get_footer\s*\(.*\)\s*;)/', $header_php[2], 2, PREG_SPLIT_DELIM_CAPTURE );
-
-        // generate content
-        ob_start();
-        eval( $footer_php[0] );
-        $this->part['content'] = $this->process_html( ob_get_contents() );
-        ob_end_clean();
-
-        // generate footer
-        ob_start();
-        eval( $footer_php[1] . $footer_php[2] );
-        $this->part['footer'] = $this->process_html( ob_get_contents() );
-        ob_end_clean();
-
-        $this->part['includes'] = $this->includes;
-
-        $this->part['thumbnails'] = $this->get_thumbnails();
+        return $name;
     }
 
     public function set_header( $name ) {
@@ -105,8 +70,18 @@ class Frontend_Debugger {
         $name = (string) $name;
         if ( '' === $name )
             $name = 'header.php';
-        $this->includes['header_' . count( $this->includes )] = get_stylesheet_directory() . '/' . $name;
+        $this->includes[] = get_stylesheet_directory() . '/' . $name;
 
+    }
+
+    // no way to detect END OF HEADER
+    public function set_loop_start() {
+
+        if ( $this->was_loop_start )
+            return;
+
+        print $this->header_separator;
+        $this->was_loop_start = true;
     }
 
     public function print_content_id( $content ) {
@@ -121,13 +96,32 @@ class Frontend_Debugger {
         $name = (string) $name;
         if ( '' === $name )
             $name = 'footer.php';
-        $this->includes['footer_' . count( $this->includes )] = get_stylesheet_directory() . '/' . $name;
+        $this->includes[] = get_stylesheet_directory() . '/' . $name;
+
+        print $this->footer_separator;
     }
 
-    private function get_thumbnails() {
+    public function ob_pre() {
+
+        ob_start();
+    }
+
+    public function ob_post() {
+        $html = ob_get_contents();
+        ob_end_clean();
+
+        // no way to detect END OF HEADER
+        $header = explode( $this->header_separator, $html );
+        if ( count( $header ) !== 2 )
+            die( 'Header separator is missing!' );
+        $this->part['header'] = htmlspecialchars( $header[0] );
+        $content = explode( $this->footer_separator, $header[1] );
+        if ( count( $content ) !== 2 )
+            die( 'Footer separator is missing!' );
+        $this->part['content'] = htmlspecialchars( $content[0] );
+        $this->part['footer'] = htmlspecialchars( $content[1] );
 
         wp_reset_query();
-
         $thumbnails = '';
         if ( have_posts() ) :
             while ( have_posts() ) {
@@ -139,14 +133,11 @@ class Frontend_Debugger {
                 endif;
             }
         endif;
+        $this->part['thumbnails'] = $thumbnails;
 
-        return $thumbnails;
-    }
+        $this->part['includes'] = $this->includes;
 
-    private function process_html( $html ) {
-
-        // ^M -> "CR" U+240D
-        return str_replace( "\r", "&#x240d;", htmlspecialchars( $html ) );
+        require( $this->debugger_template_path );
     }
 
     public function get_parts() {
@@ -156,12 +147,7 @@ class Frontend_Debugger {
 
     public function get_template_path( $file ) {
 
-        return $this->debugger_template_path . $file;
-    }
-
-    public function get_template_uri( $file ) {
-
-        return $this->debugger_template_uri . $file;
+        return debugger_template_path . $file;
     }
 
     /**
@@ -201,7 +187,6 @@ class Frontend_Debugger {
 
         return $tag;
     }
-
 }
 
 Frontend_Debugger::get_instance();
