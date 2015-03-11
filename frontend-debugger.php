@@ -7,6 +7,7 @@ Version: 0.3
 Author: Viktor Szépe
 Author URI: http://www.online1.hu/webdesign/
 License: GNU General Public License (GPL) version 2
+GitHub Plugin URI: https://github.com/szepeviktor/frontend-debugger
 */
 
 if ( ! function_exists( 'add_filter' ) ) {
