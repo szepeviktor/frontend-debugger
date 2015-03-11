@@ -81,6 +81,7 @@ class Frontend_Debugger {
         $this->part['header'] = $this->process_html( ob_get_contents() );
         ob_end_clean();
 
+        // no other way to detect END OF FOOTER
         $footer_php = preg_split( '/\b(get_footer\s*\(.*\)\s*;)/', $header_php[2], 2, PREG_SPLIT_DELIM_CAPTURE );
 
         // generate content
@@ -133,9 +134,10 @@ class Frontend_Debugger {
             while ( have_posts() ) {
                 the_post();
                 if ( has_post_thumbnail() ) :
-                    $thumbnails .= htmlspecialchars( get_the_post_thumbnail( null, 'thumbnail' ) );
-                    $thumbnails .= "<br/>";
-                    $thumbnails .= get_the_post_thumbnail( null, 'thumbnail' );
+                    $thumbnails .= sprintf( '%s<br/>%s',
+                        $this->process_html( get_the_post_thumbnail( null, 'thumbnail' ) ),
+                        get_the_post_thumbnail( null, 'thumbnail' )
+                    );
                 endif;
             }
         endif;
