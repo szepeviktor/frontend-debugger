@@ -7,6 +7,8 @@ Version: 0.3-no-eval
 Author: Viktor Szépe
 Author URI: http://www.online1.hu/webdesign/
 License: GNU General Public License (GPL) version 2
+GitHub Theme URI: https://github.com/szepeviktor/frontend-debugger
+GitHub Branch: without-eval
 */
 
 if ( ! function_exists( 'add_filter' ) ) {
