@@ -27,12 +27,31 @@ Notice: This plugin uses regular expressions and `eval()` to get the current tem
 
 TODO: sidebar, search-form, other template parts.
 
+The control panel contains:
+
+* Header, Thumbnails, The Loop, Footer, Included files anchors
+* Toogle button for line numbers
+* Toggle button for line wrapping
+* Toggle button for showing line ends
+
+The control panel's state is kept in your browser's [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
+
+Development of this plugin goes on on [GitHub](https://github.com/szepeviktor/frontend-debugger).
+Please contribute by sending PR-s implementing my TODO-s.
+
+
 == Installation ==
 
 This section describes how to install the plugin and get it working.
 
 1. Uppack the ZIP to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
+
+== Screenshots ==
+
+1. The Loop
+2. The Header.
+3. Included files.
 
 == Changelog ==
 
