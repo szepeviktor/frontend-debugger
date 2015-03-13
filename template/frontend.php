@@ -1,8 +1,6 @@
 <?php
 /*
-Template Name: Frontend Debugger Template
-Version: 1.1
-Description: Pseudo template for Frontend Debugger
+Frontend Debugger pseudo template version 1.2
 */
 
 if ( ! function_exists( 'add_filter' ) ) {
@@ -56,7 +54,7 @@ print $fd->html_element( 'script', '', array(
 </head>
 <body>
 
-<h1>Header</h1>
+<h1>Header</h1> <h3 id="page-url">view-source:<?php print $fd->part['url']; ?></h3>
 <pre id="header-html" class="prettyprint linenums lang-html">
 <?php
 

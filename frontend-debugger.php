@@ -3,7 +3,7 @@
 Plugin Name: Frontend Debugger
 Plugin URI: https://wordpress.org/plugins/frontend-debugger/
 Description: Display page source prettified.
-Version: 0.3
+Version: 0.4
 Author: Viktor Szépe
 Author URI: http://www.online1.hu/webdesign/
 License: GNU General Public License (GPL) version 2
@@ -69,6 +69,8 @@ class Frontend_Debugger {
 
     public function run_template() {
 
+        global $wp;
+
         // no other way to detect END OF HEADER
         // @TODO WP FileSystem API
         $php = file_get_contents( $this->current_template );
@@ -100,6 +102,9 @@ class Frontend_Debugger {
         $this->part['includes'] = $this->includes;
 
         $this->part['thumbnails'] = $this->get_thumbnails();
+
+        $this->part['url'] = home_url( add_query_arg( array(), $wp->request ) );
+        $this->part['url'] = trailingslashit( $this->part['url'] );
     }
 
     public function set_header( $name ) {

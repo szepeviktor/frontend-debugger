@@ -1,3 +1,5 @@
+/* Frontend Debugger javascript version 1.0 */
+
 function supports_html5_storage() {
     try {
         return 'localStorage' in window && window['localStorage'] !== null;
