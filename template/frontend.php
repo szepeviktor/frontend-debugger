@@ -17,8 +17,9 @@ $fd->run_template();
 <html>
 <head>
 <meta charset="UTF-8" />
-<meta name="generator" content="WordPress Frontend Debugger plugin" />
 <title>source: <?php wp_title(); ?></title>
+<meta name="generator" content="WordPress Frontend Debugger plugin" />
+<meta name="robots" content="noindex,nofollow" />
 <?php
 
 /* https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css */
