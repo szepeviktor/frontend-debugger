@@ -4,7 +4,7 @@ Donate link: https://szepe.net/wp-donate/
 Tags: debug, debugging, developer, development, HTML, source, frontend
 Requires at least: 3.0.1
 Tested up to: 4.1.1
-Stable tag: 0.5
+Stable tag: 0.6
 License: GPLv2 or later
 
 Display prettified page source on the frontend.
@@ -20,6 +20,7 @@ Displays:
 * The Loop (content)
 * Footer
 * Included template files
+* Highlight script, link and style elements
 
 If you are not an administrators, add `?view-source` to the URL.
 
@@ -55,12 +56,15 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 0.6 =
+* Highlight script, link and style elements.
+
 = 0.5 =
-* Prevent search engine indexing
+* Prevent search engine indexing.
 
 = 0.4 =
-* Display page URL
-* Some visual cosmetics
+* Display page URL.
+* Some visual cosmetics.
 
 = 0.3 =
 * Include remote scripts and styles.

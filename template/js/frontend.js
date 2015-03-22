@@ -10,7 +10,8 @@ function supports_html5_storage() {
 
 window.onload = function () {
     var i, linenums, wrap, lineends,
-        buttonLinenums, buttonWrap, ButtonLineends;
+        buttonLinenums, buttonWrap, buttonLineends,
+        buttonHighlightListener;
 
     if (!supports_html5_storage()) {
         alert('Please upgrade your browser.');
@@ -62,6 +63,33 @@ window.onload = function () {
         }
     }
 
+    function highlight(elementName, mimeType, color) {
+        var elements;
+
+        if ( mimeType === '' ) {
+            elements = jQuery('span.tag:contains("<' + String(elementName) + '")');
+        } else {
+            elements = jQuery('span.tag:contains("<'
+                + String(elementName) + '") ~ span.atv:contains("' + String(mimeType) + '")')
+                .prevUntil('li', 'span.tag:contains("<' + String(elementName) + '")');
+        }
+
+        elements.css('outline', '2px dashed ' + String(color));
+    };
+
+    function highlightToBeFixed() {
+        var script = document.createElement('script');
+
+        script.src = jQueryUrl;
+        script.onload = function () {
+            highlight('style', '', 'magenta');
+            highlight('link', 'stylesheet', 'pink');
+            highlight('script', '', 'red');
+        };
+        document.head.appendChild(script);
+    };
+
+
     // line numbers
     buttonLinenums = document.getElementById('toggle-linenums');
     linenums = getValue('linenums');
@@ -87,16 +115,29 @@ window.onload = function () {
     });
 
     // line ends
-    ButtonLineends = document.getElementById('toggle-lineends');
+    buttonLineends = document.getElementById('toggle-lineends');
     lineends = getValue('lineends');
     if (! lineends) {
-        toggleLineends(ButtonLineends);
+        toggleLineends(buttonLineends);
     }
-    ButtonLineends.addEventListener('click', function (event) {
+    buttonLineends.addEventListener('click', function (event) {
         lineends = !lineends;
         setValue('lineends', lineends);
         toggleLineends(event.target);
     });
+
+    // highlight elements to be fixed
+    buttonHighlight = document.getElementById('button-highlight');
+    buttonHighlightListener = function (event) {
+        buttonHighlight.removeEventListener('click', buttonHighlightListener);
+        event.target.classList.toggle('on');
+        if ( typeof jQueryUrl === 'undefined' ) {
+            return;
+        }
+        highlightToBeFixed();
+    };
+    buttonHighlight.classList.toggle('on');
+    buttonHighlight.addEventListener('click', buttonHighlightListener);
 
     // enable transitions
     setTimeout(function () {

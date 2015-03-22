@@ -9,6 +9,7 @@ if ( ! function_exists( 'add_filter' ) ) {
     exit();
 }
 
+global $wp_scripts;
 $fd = Frontend_Debugger::get_instance();
 $fd->run_template();
 
@@ -17,9 +18,8 @@ $fd->run_template();
 <html>
 <head>
 <meta charset="UTF-8" />
-<title>source: <?php wp_title(); ?></title>
 <meta name="generator" content="WordPress Frontend Debugger plugin" />
-<meta name="robots" content="noindex,nofollow" />
+<title>source: <?php wp_title(); ?></title>
 <?php
 
 /* https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css */
@@ -46,9 +46,16 @@ print $fd->html_element( 'script', '', array(
     'src'   => $fd->get_template_uri( 'js/run_prettify.js' ),
     'type'  => "text/javascript"
 ) );
+print $fd->html_element(
+    'script',
+    "jQueryUrl='" . home_url( $wp_scripts->registered['jquery-core']->src ) . "';",
+    array(
+        'type'  => "text/javascript"
+    )
+);
 print $fd->html_element( 'script', '', array(
-    'src'   => $fd->get_template_uri( 'js/frontend.min.js' ),
-    'type'  => "text/javascript"
+        'src'   => $fd->get_template_uri( 'js/frontend.min.js' ),
+        'type'  => "text/javascript"
 ) );
 
 ?>
@@ -108,6 +115,7 @@ var_export( $fd->part['includes'] );
     <button id="toggle-linenums" title="Toogle line numbers">Line #</button>
     <button id="toggle-wrap" title="Toggle long line wrapping">Wrap</button>
     <button id="toggle-lineends" title="Toggle visible line ends">Line ends</button>
+    <button id="button-highlight" title="Highlight elements to be fixed">Highlight</button>
 </div>
 
 </body>
