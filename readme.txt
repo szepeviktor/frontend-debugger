@@ -12,7 +12,7 @@ Display prettified page source on the frontend.
 == Description ==
 
 = Only for development! =
-
+ 
 Displays:
 
 * Header
@@ -34,6 +34,7 @@ The control panel contains:
 * Toogle button for line numbers
 * Toggle button for line wrapping
 * Toggle button for showing line ends
+* Button for highlighting
 
 The control panel's state is kept in your browser's [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
 
