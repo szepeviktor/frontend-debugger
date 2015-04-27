@@ -4,7 +4,7 @@ Donate link: https://szepe.net/wp-donate/
 Tags: debug, debugging, developer, development, HTML, source, frontend
 Requires at least: 3.0.1
 Tested up to: 4.2.1
-Stable tag: 0.7
+Stable tag: 0.7.1
 License: GPLv2 or later
 
 Display prettified page source on the frontend.
@@ -57,7 +57,7 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
-= 0.7 =
+= 0.7.1 =
 * Fixed site_url() instead home_url().
 
 = 0.6 =

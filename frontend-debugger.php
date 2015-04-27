@@ -3,7 +3,7 @@
 Plugin Name: Frontend Debugger
 Plugin URI: https://wordpress.org/plugins/frontend-debugger/
 Description: Display page source prettified.
-Version: 0.6
+Version: 0.7.1
 Author: Viktor Szépe
 Author URI: http://www.online1.hu/webdesign/
 License: GNU General Public License (GPL) version 2
