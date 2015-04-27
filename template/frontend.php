@@ -1,6 +1,6 @@
 <?php
 /*
-Frontend Debugger pseudo template version 1.2
+Frontend Debugger pseudo template version 1.3
 */
 
 if ( ! function_exists( 'add_filter' ) ) {
@@ -48,7 +48,7 @@ print $fd->html_element( 'script', '', array(
 ) );
 print $fd->html_element(
     'script',
-    "jQueryUrl='" . home_url( $wp_scripts->registered['jquery-core']->src ) . "';",
+    "jQueryUrl='" . site_url( $wp_scripts->registered['jquery-core']->src ) . "';",
     array(
         'type'  => "text/javascript"
     )
