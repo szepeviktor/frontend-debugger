@@ -3,7 +3,7 @@
 Plugin Name: Frontend Debugger
 Plugin URI: https://wordpress.org/plugins/frontend-debugger/
 Description: Display page source prettified.
-Version: 0.7.1
+Version: 0.8.0
 Author: Viktor Szépe
 Author URI: http://www.online1.hu/webdesign/
 License: GNU General Public License (GPL) version 2
@@ -11,9 +11,16 @@ GitHub Plugin URI: https://github.com/szepeviktor/frontend-debugger
 */
 
 if ( ! function_exists( 'add_filter' ) ) {
-    header( 'Status: 403 Forbidden' );
-    header( 'HTTP/1.1 403 Forbidden' );
-    exit();
+    error_log( 'Break-in attempt detected: frontend_debugger_direct_access '
+        . addslashes( @$_SERVER['REQUEST_URI'] )
+    );
+    ob_get_level() && ob_end_clean();
+    if ( ! headers_sent() ) {
+        header( 'Status: 403 Forbidden' );
+        header( 'HTTP/1.1 403 Forbidden', true, 403 );
+        header( 'Connection: Close' );
+    }
+    exit;
 }
 
 class Frontend_Debugger {
@@ -33,7 +40,7 @@ class Frontend_Debugger {
 
     public function __construct() {
 
-        if ( is_admin() )
+        if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) )
             return;
 
         $this->debugger_template_path = plugin_dir_path( __FILE__ ) . 'template/';
@@ -43,9 +50,10 @@ class Frontend_Debugger {
         add_action( 'get_header', array( $this, 'set_header' ) );
         add_filter( 'the_content', array( $this, 'print_content_id' ), 0 );
         // @TODO - get_sidebar
-        // get_template_part_$ https://github.com/szepeviktor/wordpress-plugin-construction/blob/master/what-the-file/what-the-file.php
-        // get_search_form
+        //       - get_search_form
+        //       - filter out registered scripts
         add_action( 'get_footer', array( $this, 'set_footer' ) );
+        add_action( 'all', array( $this, 'set_template_parts' ), 1, 3 );
     }
 
     public static function get_instance() {
@@ -74,7 +82,15 @@ class Frontend_Debugger {
         // no other way to detect END OF HEADER
         // @TODO WP FileSystem API
         $php = file_get_contents( $this->current_template );
+        // Returned array:
+        //     [0] pre-get_header
+        //     [1] get_header() call
+        //     [2] post-get_header
         $header_php = preg_split( '/\b(get_header\s*\(.*\)\s*;)/', $php, 2, PREG_SPLIT_DELIM_CAPTURE );
+        if ( 3 !== count( $header_php ) ) {
+            // Try with get_template_part()
+            $header_php = preg_split( '/\b(get_template_part\s*\(\s*["\']header.*\)\s*;)/', $php, 2, PREG_SPLIT_DELIM_CAPTURE );
+        }
 
         // remove opening PHP tag
         $header_php[0] = substr( $header_php[0], 5 );
@@ -85,7 +101,15 @@ class Frontend_Debugger {
         ob_end_clean();
 
         // no other way to detect END OF FOOTER
+        // Returned array:
+        //     [0] pre-get_footer
+        //     [1] get_footer() call
+        //     [2] post-get_footer
         $footer_php = preg_split( '/\b(get_footer\s*\(.*\)\s*;)/', $header_php[2], 2, PREG_SPLIT_DELIM_CAPTURE );
+        if ( 3 !== count( $footer_php ) ) {
+            // Try with get_template_part()
+            $footer_php = preg_split( '/\b(get_template_part\s*\(\s*["\']footer.*\)\s*;)/', $php, 2, PREG_SPLIT_DELIM_CAPTURE );
+        }
 
         // generate content
         ob_start();
@@ -129,6 +153,33 @@ class Frontend_Debugger {
         if ( '' === $name )
             $name = 'footer.php';
         $this->includes['footer_' . count( $this->includes )] = get_stylesheet_directory() . '/' . $name;
+    }
+
+    public function set_template_parts( $tag, $slug = null, $name = null ) {
+
+        if ( 0 !== strpos( $tag, 'get_template_part_' ) ) {
+            return;
+        }
+
+        // Check if slug is set
+        if ( null !== $slug ) {
+            // Templates array
+            $templates = array();
+            // Add possible template part to array
+            if ( null !== $name ) {
+                $templates[] = "{$slug}-{$name}.php";
+            }
+            // Add possible template part to array
+            $templates[] = "{$slug}.php";
+
+            // Get template part path
+            $template_part = locate_template( $templates );
+
+            // Add template part if found
+            if ( '' !== $template_part ) {
+                $this->includes['part_' . count( $this->includes )] = $template_part;
+            }
+        }
     }
 
     private function get_thumbnails() {

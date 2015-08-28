@@ -3,8 +3,8 @@ Contributors: szepe.viktor
 Donate link: https://szepe.net/wp-donate/
 Tags: debug, debugging, developer, development, HTML, source, frontend
 Requires at least: 3.0.1
-Tested up to: 4.2.1
-Stable tag: 0.7.1
+Tested up to: 4.3
+Stable tag: 0.8.0
 License: GPLv2 or later
 
 Display prettified page source on the frontend.
@@ -19,28 +19,28 @@ Displays:
 * Thumbnails
 * The Loop (content)
 * Footer
-* Included template files
+* Included template parts
 * Highlight script, link and style elements
 
-If you are not an administrators, add `?view-source` to the URL.
+If you are not an administrators, add `?view-source` to the URL to activate Frontend Debugger.
 
 Notice: This plugin uses regular expressions and `eval()` to get the current template apart.
 
-TODO: sidebar, search-form, other template parts.
+TODO: sidebar, search-form, filter out enqueued sctripts/styles.
 
-The control panel contains:
+The mini control panel contains:
 
 * Header, Thumbnails, The Loop, Footer, Included files anchors
 * Toogle button for line numbers
 * Toggle button for line wrapping
 * Toggle button for showing line ends
-* Button for highlighting
+* Button for script and style highlighting
 
-The control panel's state is kept in your browser's [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
+The control panel's state is kept in your browser's
+[localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
 
 Development of this plugin goes on on [GitHub](https://github.com/szepeviktor/frontend-debugger).
 Please contribute by sending PR-s implementing my TODO-s.
-
 
 == Installation ==
 
@@ -51,11 +51,17 @@ This section describes how to install the plugin and get it working.
 
 == Screenshots ==
 
-1. The Loop
+1. The Loop.
 2. The Header.
 3. Included files.
 
 == Changelog ==
+
+= 0.8.0 =
+* Added template part detection from barrykooij's What The File plugin.
+* Updated fail2ban trigger on direct access.
+* Added support for `get_template_part()` detection.
+* WordPress 4.3 compatibility.
 
 = 0.7.1 =
 * Fixed site_url() instead home_url().

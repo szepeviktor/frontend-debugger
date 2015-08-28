@@ -1,12 +1,19 @@
 <?php
 /*
-Frontend Debugger pseudo template version 1.3
+Frontend Debugger pseudo template version 1.3.0
 */
 
 if ( ! function_exists( 'add_filter' ) ) {
-    header( 'Status: 403 Forbidden' );
-    header( 'HTTP/1.1 403 Forbidden' );
-    exit();
+    error_log( 'Break-in attempt detected: frontend_debugger_template_direct_access '
+        . addslashes( @$_SERVER['REQUEST_URI'] )
+    );
+    ob_get_level() && ob_end_clean();
+    if ( ! headers_sent() ) {
+        header( 'Status: 403 Forbidden' );
+        header( 'HTTP/1.1 403 Forbidden', true, 403 );
+        header( 'Connection: Close' );
+    }
+    exit;
 }
 
 global $wp_scripts;
