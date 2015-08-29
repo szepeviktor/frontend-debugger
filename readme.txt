@@ -4,7 +4,7 @@ Donate link: https://szepe.net/wp-donate/
 Tags: debug, debugging, developer, development, HTML, source, frontend
 Requires at least: 3.0.1
 Tested up to: 4.3
-Stable tag: 0.8.0
+Stable tag: 0.9.0
 License: GPLv2 or later
 
 Display prettified page source on the frontend.
@@ -22,11 +22,15 @@ Displays:
 * Included template parts
 * Highlight script, link and style elements
 
-If you are not an administrators, add `?view-source` to the URL to activate Frontend Debugger.
+To remove **all** registered scripts and styles add `?remove-scripts` to the URL.
+All these scripts and styles will be listed at the bottom of the footer as HTML comment.
+This way it is possible to detect non-WordPress script printing.
+
+If you are not an administrators add `?view-source` to the URL to activate Frontend Debugger.
 
 Notice: This plugin uses regular expressions and `eval()` to get the current template apart.
 
-TODO: sidebar, search-form, filter out enqueued sctripts/styles.
+TODO: sidebar, search-form.
 
 The mini control panel contains:
 
@@ -35,6 +39,8 @@ The mini control panel contains:
 * Toggle button for line wrapping
 * Toggle button for showing line ends
 * Button for script and style highlighting
+
+From the second click on the `Highlight` button loops through (scrolls to) all scripts and styles.
 
 The control panel's state is kept in your browser's
 [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
@@ -56,6 +62,10 @@ This section describes how to install the plugin and get it working.
 3. Included files.
 
 == Changelog ==
+
+= 0.9.0 =
+* Added `remove-scripts` GET parameter
+* Added `Highlight` button secondary function: loop through all scripts and styles
 
 = 0.8.0 =
 * Added template part detection from barrykooij's What The File plugin.

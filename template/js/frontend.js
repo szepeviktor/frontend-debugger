@@ -1,4 +1,5 @@
-/* Frontend Debugger javascript version 1.0 */
+/* Frontend Debugger javascript version 1.1
+@preserve */
 
 function supports_html5_storage() {
     try {
@@ -74,7 +75,7 @@ window.onload = function () {
                 .prevUntil('li', 'span.tag:contains("<' + String(elementName) + '")');
         }
 
-        elements.css('outline', '2px dashed ' + String(color));
+        elements.css('outline', '2px dashed ' + String(color)).css('background-color', 'black').attr('data-next', '1');
     };
 
     function highlightToBeFixed() {
@@ -128,8 +129,25 @@ window.onload = function () {
 
     // highlight elements to be fixed
     buttonHighlight = document.getElementById('button-highlight');
+    buttonHighlightNext = function (event) {
+        var next = buttonHighlight.dataset.next++,
+            bodyRect = document.body.getBoundingClientRect(),
+            elements = jQuery('span[data-next]'),
+            elemRect,
+            offset;
+
+        elemRect = elements.eq(next)[0].getBoundingClientRect(),
+        offset = elemRect.top - bodyRect.top;
+        window.scrollTo(0, offset);
+
+        if (next + 1 >= elements.length) {
+            buttonHighlight.dataset.next = 0;
+        }
+    }
     buttonHighlightListener = function (event) {
         buttonHighlight.removeEventListener('click', buttonHighlightListener);
+        buttonHighlight.dataset.next = 0;
+        buttonHighlight.addEventListener('click', buttonHighlightNext);
         event.target.classList.toggle('on');
         if ( typeof jQueryUrl === 'undefined' ) {
             return;

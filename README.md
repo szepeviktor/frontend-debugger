@@ -1,3 +1,5 @@
+# Frontend Debugger WordPress plugin
+
 ![The Loop](https://github.com/szepeviktor/frontend-debugger/raw/assets/screenshot-1.jpg)
 <hr/>
 ![The Header](https://github.com/szepeviktor/frontend-debugger/raw/assets/screenshot-2.jpg)

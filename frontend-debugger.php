@@ -3,7 +3,7 @@
 Plugin Name: Frontend Debugger
 Plugin URI: https://wordpress.org/plugins/frontend-debugger/
 Description: Display page source prettified.
-Version: 0.8.0
+Version: 0.9.0
 Author: Viktor Szépe
 Author URI: http://www.online1.hu/webdesign/
 License: GNU General Public License (GPL) version 2
@@ -37,6 +37,8 @@ class Frontend_Debugger {
      * Template files.
      */
     private $includes = array();
+    private $removed_scripts = array();
+    private $removed_styles = array();
 
     public function __construct() {
 
@@ -54,6 +56,12 @@ class Frontend_Debugger {
         //       - filter out registered scripts
         add_action( 'get_footer', array( $this, 'set_footer' ) );
         add_action( 'all', array( $this, 'set_template_parts' ), 1, 3 );
+
+        if ( isset( $_GET['remove-scripts'] ) ) {
+            add_filter( 'print_scripts_array', array( $this, 'remove_scripts' ), 20 );
+            add_filter( 'print_styles_array', array( $this, 'remove_styles' ), 20 );
+            add_action( 'wp_print_footer_scripts', array( $this, 'prints_list' ), 20 );
+        }
     }
 
     public static function get_instance() {
@@ -79,7 +87,7 @@ class Frontend_Debugger {
 
         global $wp;
 
-        // no other way to detect END OF HEADER
+        // No other way to detect END OF HEADER
         // @TODO WP FileSystem API
         $php = file_get_contents( $this->current_template );
         // Returned array:
@@ -92,15 +100,15 @@ class Frontend_Debugger {
             $header_php = preg_split( '/\b(get_template_part\s*\(\s*["\']header.*\)\s*;)/', $php, 2, PREG_SPLIT_DELIM_CAPTURE );
         }
 
-        // remove opening PHP tag
+        // Remove opening PHP tag
         $header_php[0] = substr( $header_php[0], 5 );
-        // generate header
+        // Generate header
         ob_start();
         eval( $header_php[0] . $header_php[1] );
         $this->part['header'] = $this->process_html( ob_get_contents() );
         ob_end_clean();
 
-        // no other way to detect END OF FOOTER
+        // No other way to detect END OF FOOTER
         // Returned array:
         //     [0] pre-get_footer
         //     [1] get_footer() call
@@ -111,13 +119,13 @@ class Frontend_Debugger {
             $footer_php = preg_split( '/\b(get_template_part\s*\(\s*["\']footer.*\)\s*;)/', $php, 2, PREG_SPLIT_DELIM_CAPTURE );
         }
 
-        // generate content
+        // Generate content
         ob_start();
         eval( $footer_php[0] );
         $this->part['content'] = $this->process_html( ob_get_contents() );
         ob_end_clean();
 
-        // generate footer
+        // Generate footer
         ob_start();
         eval( $footer_php[1] . $footer_php[2] );
         $this->part['footer'] = $this->process_html( ob_get_contents() );
@@ -237,7 +245,7 @@ class Frontend_Debugger {
             return '';
         }
 
-        // attributes given in place of content
+        // Attributes given in place of content
         if ( is_array( $content ) ) {
             $attrs = $content;
             $content = false;
@@ -261,6 +269,43 @@ class Frontend_Debugger {
         return $tag;
     }
 
+    public function remove_scripts( $todo ) {
+
+        $this->removed_scripts = array_merge( $this->removed_scripts, $todo );
+
+        return array();
+    }
+
+    public function remove_styles( $todo ) {
+
+        $this->removed_styles = array_merge( $this->removed_styles, $todo );
+
+        return array();
+    }
+
+    public function prints_list() {
+
+        global $wp_scripts, $wp_styles;
+
+        remove_filter( 'print_scripts_array', array( $this, 'remove_scripts' ), 20 );
+        remove_filter( 'print_styles_array', array( $this, 'remove_styles' ), 20 );
+
+        print "\n<!--\n";
+
+        print "### HEADER styles ###\n";
+        $wp_styles->do_items( $this->removed_styles, 0 );
+
+        print "### FOOTER styles ###\n";
+        $wp_styles->do_items( $this->removed_styles, 1 );
+
+        print "### HEADER scripts ###\n";
+        $wp_scripts->print_scripts( $this->removed_scripts, 0 );
+
+        print "### FOOTER scripts ###\n";
+        $wp_scripts->print_scripts( $this->removed_scripts, 1 );
+
+        print "-->\n";
+    }
 }
 
 Frontend_Debugger::get_instance();
