@@ -27,8 +27,9 @@ ol.hide-linenums li.L6,
 ol.hide-linenums li.L7,
 ol.hide-linenums li.L8,
 ol.hide-linenums li.L9 { list-style-type: none !important; }
-/* \021B5 = &crarr; */
-li:after { content: '\021B5'; }
+/* \021B5 = &crarr; downwards arrow with corner leftwards */
+/* \021A9 = &#8617; leftwards arrow with hook */
+li:after { content: '\021A9'; }
 .transition li:after { transition: opacity 0.5s; }
 li.no-end:after { opacity: 0; }
 #includes li:after { content: none; }

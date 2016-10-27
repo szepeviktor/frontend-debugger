@@ -23,10 +23,10 @@ Displays:
 * Highlight script, link and style elements
 
 To remove **all** registered scripts and styles add `?remove-scripts` to the URL.
-All these scripts and styles will be listed at the bottom of the footer as HTML comment.
+All these scripts and styles will be listed at the bottom of the footer as a HTML comment.
 This way it is possible to detect non-WordPress script printing.
 
-If you are not an administrators add `?view-source` to the URL to activate Frontend Debugger.
+If you are not a logged-in administrator add `?view-source` to the URL to activate Frontend Debugger.
 
 Notice: This plugin uses regular expressions and `eval()` to get the current template apart.
 
@@ -46,7 +46,7 @@ The control panel's state is kept in your browser's
 [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
 
 Development of this plugin goes on on [GitHub](https://github.com/szepeviktor/frontend-debugger).
-Please contribute by sending PR-s implementing my TODO-s.
+Please contribute by sending PR-s or implementing my TODO-s.
 
 == Installation ==
 
